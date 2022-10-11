@@ -11,11 +11,11 @@ import lombok.*;
 public class Account {
 
     private Integer ID;
-    private String AccountType;
-    private String AccountNo;
-    private String AccountName;
-    private String AccountBal;
-    private String AccountDate;
+    private String accountType;
+    private String accountNo;
+    private String accountName;
+    private String accountBal;
+    private String accountDate;
 
 
 }

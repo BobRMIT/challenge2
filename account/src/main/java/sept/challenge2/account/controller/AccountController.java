@@ -1,14 +1,10 @@
 package sept.challenge2.account.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.yaml.snakeyaml.events.Event;
 import sept.challenge2.account.dao.AccountDAO;
 import sept.challenge2.account.model.Account;
 
-import java.net.URI;
 import java.sql.SQLException;
 
 import java.text.SimpleDateFormat;
@@ -30,39 +26,23 @@ public class AccountController {
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
-    public ResponseEntity<Account> createBooking(
+    @ResponseBody
+    public Account createAccount(
             @RequestHeader(name = "X-COM-PERSIST", required = false) String headerPersist,
             @RequestHeader(name = "X-COM-LOCATION", required = false, defaultValue = "ASIA") String headerLocation,
             @RequestBody Account account)
             throws Exception
     {
+        System.out.println(account);
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Date date = new Date();
 
-
-        //Generate resource id
-        Integer id = accountDAO.getCount() + 1;
-        account.setID(id);
         account.setAccountDate(formatter.format(date));
         //add resource
-        System.out.println(account);
-
         accountDAO.createAccount(account);
-
-//        accountDAO.createAccount(account.getID(), account.getAccountType(), account.getAccountNo(),
-//                account.getAccountName(), account.getAccountBal(), account.getAccountDate());
-
-        //Create resource location
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(account.getID())
-                .toUri();
-
-        //Send location in response
-        //System.out.println(ResponseEntity.created(location).body(0));
-        //System.out.println(ResponseEntity.created(location).build());
-        return ResponseEntity.created(location).build();
+        return account;
     }
+
     @GetMapping(value = "/{id}", produces = "application/json")
     public Account get(@PathVariable Integer id) throws SQLException {
         account = accountDAO.getAccount(id);
@@ -71,6 +51,7 @@ public class AccountController {
     }
 
     @PutMapping(value = "/update", consumes = "application/json", produces =  "application/json")
+    @ResponseBody
     public Account update(
             @RequestBody Account account
     ) throws SQLException{
@@ -83,6 +64,7 @@ public class AccountController {
     }
 
     @DeleteMapping(value = "/delete", consumes = "application/json")
+    @ResponseBody
     public String delete(@RequestBody Account account) throws SQLException{
         Boolean result = accountDAO.deleteAccount(account.getID());
         System.out.println(account);
@@ -93,8 +75,5 @@ public class AccountController {
             return "Account Does Not Exist";
         }
     }
-
-
-
 
 }
